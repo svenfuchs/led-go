@@ -2,8 +2,6 @@ package led
 
 import (
 	"bytes"
-	"github.com/svenfuchs/led-go/ansi"
-	"github.com/svenfuchs/led-go/keys"
 	"time"
 )
 
@@ -22,22 +20,22 @@ var space = []byte{' '}
 // NewReadline creates a line editor that resembles most of Linenoise's functionality
 func NewReadline(led string, t ...Iterm) *Ed {
 	e := NewEd(led, t...)
-	e.Handle(keys.Chars, func(e *Ed, k keys.Key) { e.Insert(k.Chars) })
-	e.Handle(keys.CtrlA, func(e *Ed, k keys.Key) { e.Return() })
-	e.Handle(keys.CtrlB, func(e *Ed, k keys.Key) { e.Left() })
-	e.Handle(keys.CtrlC, func(e *Ed, k keys.Key) { e.Discard() })
-	e.Handle(keys.CtrlD, func(e *Ed, k keys.Key) { e.Delete() })
-	e.Handle(keys.CtrlE, func(e *Ed, k keys.Key) { e.End() })
-	e.Handle(keys.CtrlF, func(e *Ed, k keys.Key) { e.Right() })
-	e.Handle(keys.CtrlK, func(e *Ed, k keys.Key) { e.DeleteFromCursor() })
-	e.Handle(keys.CtrlT, func(e *Ed, k keys.Key) { e.Transpose() })
-	e.Handle(keys.CtrlU, func(e *Ed, k keys.Key) { e.Reset() })
-	e.Handle(keys.CtrlW, func(e *Ed, k keys.Key) { e.BackWord() })
-	e.Handle(keys.Enter, func(e *Ed, k keys.Key) { e.Newline() })
-	e.Handle(keys.Backspace, func(e *Ed, k keys.Key) { e.Back() })
-	e.Handle(keys.Delete, func(e *Ed, k keys.Key) { e.Delete() })
-	e.Handle(keys.Left, func(e *Ed, k keys.Key) { e.Left() })
-	e.Handle(keys.Right, func(e *Ed, k keys.Key) { e.Right() })
+	e.Handle(Chars, func(e *Ed, k Key) { e.Insert(k.Chars) })
+	e.Handle(CtrlA, func(e *Ed, k Key) { e.Return() })
+	e.Handle(CtrlB, func(e *Ed, k Key) { e.Left() })
+	e.Handle(CtrlC, func(e *Ed, k Key) { e.Discard() })
+	e.Handle(CtrlD, func(e *Ed, k Key) { e.Delete() })
+	e.Handle(CtrlE, func(e *Ed, k Key) { e.End() })
+	e.Handle(CtrlF, func(e *Ed, k Key) { e.Right() })
+	e.Handle(CtrlK, func(e *Ed, k Key) { e.DeleteFromCursor() })
+	e.Handle(CtrlT, func(e *Ed, k Key) { e.Transpose() })
+	e.Handle(CtrlU, func(e *Ed, k Key) { e.Reset() })
+	e.Handle(CtrlW, func(e *Ed, k Key) { e.BackWord() })
+	e.Handle(Enter, func(e *Ed, k Key) { e.Newline() })
+	e.Handle(Backspace, func(e *Ed, k Key) { e.Back() })
+	e.Handle(Delete, func(e *Ed, k Key) { e.Delete() })
+	e.Handle(Left, func(e *Ed, k Key) { e.Left() })
+	e.Handle(Right, func(e *Ed, k Key) { e.Right() })
 	return e
 }
 
@@ -47,7 +45,7 @@ func NewReadline(led string, t ...Iterm) *Ed {
 func NewEd(led string, t ...Iterm) *Ed {
 	return &Ed{
 		term:      StartTerm(t...),
-		handlers:  map[int]func(*Ed, keys.Key){},
+		handlers:  map[int]func(*Ed, Key){},
 		Prompt:    []byte(led),
 		pos:       0,
 		Chars:     []byte{},
@@ -58,7 +56,7 @@ func NewEd(led string, t ...Iterm) *Ed {
 // Ed represents the line editor
 type Ed struct {
 	term      *Term
-	handlers  map[int]func(*Ed, keys.Key)
+	handlers  map[int]func(*Ed, Key)
 	Prompt    []byte
 	pos       int
 	Chars     []byte
@@ -67,7 +65,7 @@ type Ed struct {
 }
 
 // Handle attaches a handler for a key
-func (e *Ed) Handle(key int, handler func(*Ed, keys.Key)) {
+func (e *Ed) Handle(key int, handler func(*Ed, Key)) {
 	e.handlers[key] = handler
 }
 
@@ -126,7 +124,7 @@ func (e *Ed) Insert(b []byte) {
 // Reject rejects the given chars by printing them at the current
 // cursor position in red, and removing them after 100 milliseconds.
 func (e *Ed) Reject(chars []byte) {
-	e.term.Write(ansi.Colored(ansi.Red, chars))
+	e.term.Write(Colored(Red, chars))
 	time.Sleep(100 * time.Millisecond)
 	e.SetCursor()
 	e.clear()
@@ -275,7 +273,7 @@ func (e *Ed) Suggest(strs [][]byte) {
 
 	e.Suggested = s
 	e.clear()
-	e.Write(concat(e.Chars[e.pos:], ansi.Colored(ansi.Green, e.Suggested)))
+	e.Write(concat(e.Chars[e.pos:], Colored(Green, e.Suggested)))
 	e.SetCursor()
 }
 

@@ -4,6 +4,10 @@ import (
 	"bytes"
 )
 
+func dup(b []byte) []byte {
+	return append([]byte{}, b...)
+}
+
 func min(i ...int) int {
 	min := i[0]
 	for _, num := range i[0:] {

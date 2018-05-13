@@ -3,8 +3,6 @@ package led
 import (
 	"bytes"
 	"github.com/pkg/term"
-	"github.com/svenfuchs/led-go/ansi"
-	"github.com/svenfuchs/led-go/keys"
 )
 
 // StartTerm starts a terminal.
@@ -26,8 +24,8 @@ type Term struct {
 }
 
 // Read returns a channel for reading keys from the terminal. See keys.Read.
-func (t *Term) Read() chan keys.Key {
-	return keys.Read(t.tty)
+func (t *Term) Read() chan Key {
+	return Read(t.tty)
 }
 
 // Write writes the given chars to the terminal.
@@ -41,17 +39,17 @@ func (t *Term) Del(i ...int) {
 	if len(i) == 0 {
 		i = []int{1}
 	}
-	t.tty.Write(bytes.Repeat(chars(ansi.Del), i[0]))
+	t.tty.Write(bytes.Repeat(chars(Del), i[0]))
 }
 
 // Newline writes a newline char to the terminal.
 func (t *Term) Newline() {
-	t.Write(chars(ansi.Newline))
+	t.Write(chars(Newline))
 }
 
 // Return writes a carriage return char to the terminal.
 func (t *Term) Return() {
-	t.Write(chars(ansi.Cr))
+	t.Write(chars(Cr))
 }
 
 // ClearLine clears the current line.
@@ -62,28 +60,28 @@ func (t *Term) ClearLine() {
 
 // Clear clears from the current cursor position to the end of the line.
 func (t *Term) Clear() {
-	t.Write(chars(ansi.Clear))
+	t.Write(chars(Clear))
 }
 
 // ShowCursor shows the cursor.
 func (t *Term) ShowCursor() {
-	t.Write(chars(ansi.ShowCursor))
+	t.Write(chars(ShowCursor))
 }
 
 // HideCursor hides the cursor.
 func (t *Term) HideCursor() {
-	t.Write(chars(ansi.HideCursor))
+	t.Write(chars(HideCursor))
 }
 
 // SetCursor moves the cursor to the given horizontal position.
 func (t *Term) SetCursor(pos int) {
-	t.Write(ansi.SetCursor(pos))
+	t.Write(SetCursor(pos))
 }
 
 // MoveCursor moves the cursor by the given number of chars in the given
 // direction.
 func (t *Term) MoveCursor(i int, dir int) {
-	t.Write(ansi.MoveCursor(i, dir))
+	t.Write(MoveCursor(i, dir))
 }
 
 // Pause pauses the terminal, restoring the previous mode and settings.
@@ -144,5 +142,5 @@ func (t *termWrap) RawMode() error {
 }
 
 func chars(c int) []byte {
-	return ansi.Ansi(c)
+	return Ansi(c)
 }

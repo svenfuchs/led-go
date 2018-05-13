@@ -1,4 +1,4 @@
-package ansi
+package led
 
 import (
 	"bytes"
@@ -104,16 +104,4 @@ func Deansi(b []byte) []byte {
 
 func tag(name string, body []byte) []byte {
 	return concat([]byte("<"+name+"-"), body, []byte(">"))
-}
-
-func concat(a []byte, b ...[]byte) []byte {
-	r := append(a, b[0]...)
-	if len(b) > 1 {
-		r = concat(r, b[1:]...)
-	}
-	return r
-}
-
-func dup(b []byte) []byte {
-	return append([]byte{}, b...)
 }

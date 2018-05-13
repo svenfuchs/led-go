@@ -3,8 +3,6 @@ package led
 import (
 	// "fmt"
 	"github.com/stretchr/testify/assert"
-	. "github.com/svenfuchs/led-go/ansi"
-	. "github.com/svenfuchs/led-go/keys"
 	"strings"
 	"testing"
 	"time"

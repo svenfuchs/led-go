@@ -1,4 +1,4 @@
-package ansi
+package led
 
 import (
 	"github.com/stretchr/testify/assert"
