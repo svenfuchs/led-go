@@ -6,6 +6,8 @@ import (
 
 var blank = []byte{}
 
+// NewSet returns a list of strings that are used for completion, history, and
+// suggestions.
 func NewSet(strs [][]byte, str []byte, mode int) *Set {
 	if mode == Comp {
 		str = lastWord(str)
@@ -15,12 +17,15 @@ func NewSet(strs [][]byte, str []byte, mode int) *Set {
 	return &Set{strs: strs, str: str, curr: -1}
 }
 
+// Set represents a list of strings that are used for completion, history, and
+// suggestions.
 type Set struct {
 	curr int
 	strs [][]byte
 	str  []byte
 }
 
+// Next returns the next string from the list.
 func (c *Set) Next() []byte {
 	strs := c.matches()
 	if len(strs) == 0 {
@@ -33,6 +38,7 @@ func (c *Set) Next() []byte {
 	return strs[c.curr]
 }
 
+// Prev returns the previous string from the list.
 func (c *Set) Prev() []byte {
 	strs := c.matches()
 	if len(strs) == 0 {
@@ -45,7 +51,7 @@ func (c *Set) Prev() []byte {
 	return strs[c.curr]
 }
 
-func (c *Set) Eq(other *Set) bool {
+func (c *Set) eq(other *Set) bool {
 	lft, rgt := c.strs, other.strs
 	if len(lft) != len(rgt) {
 		return false

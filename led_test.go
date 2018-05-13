@@ -58,7 +58,7 @@ func TestLeftAtStart(t *testing.T) {
 
 // Right
 
-func TestRighttAtEnd(t *testing.T) {
+func TestRightAtEnd(t *testing.T) {
 	prompt, term := setup()
 	prompt.Right()
 	assertOut(t, term, []string{
@@ -66,7 +66,7 @@ func TestRighttAtEnd(t *testing.T) {
 	})
 }
 
-func TestRighttAtStart(t *testing.T) {
+func TestRightAtStart(t *testing.T) {
 	prompt, term := setup()
 	receive(term, "foo")
 	prompt.Return()
