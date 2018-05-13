@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func TestPrompt(t *testing.T) {
+func TestEd(t *testing.T) {
 	prompt, term := setup()
 	assert.Equal(t, "", prompt.Str())
 	assert.Equal(t, 0, prompt.pos)
@@ -541,9 +541,9 @@ func assertOut(t *testing.T, term *testTerm, strs []string) {
 	assert.Equal(t, strings.Join(strs, ""), out)
 }
 
-func setup() (*Prompt, *testTerm) {
+func setup() (*Ed, *testTerm) {
 	term := newTestTerm()
-	prompt := NewLed("t ~ ", term)
+	prompt := NewReadline("t ~ ", term)
 	go prompt.Run()
 	time.Sleep(1 * time.Millisecond)
 	return prompt, term

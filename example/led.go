@@ -9,16 +9,16 @@ import (
 )
 
 func main() {
-	l := NewLed("travis $ ")
-	l.Handle(Enter, func(p *Prompt, k Key) { enter(p) })
-	l.Handle(Chars, func(p *Prompt, k Key) { chars(p, k) })
-	l.Handle(Backspace, func(p *Prompt, k Key) { back(p, k) })
-	l.Handle(Delete, func(p *Prompt, k Key) { delete(p, k) })
-	l.Handle(Tab, func(p *Prompt, k Key) { tab(p, k) })
-	l.Handle(ShiftTab, func(p *Prompt, k Key) { shiftTab(p, k) })
-	l.Handle(Up, func(p *Prompt, k Key) { prev(p) })
-	l.Handle(Down, func(p *Prompt, k Key) { next(p) })
-	l.Run()
+	r := NewReadline("travis $ ")
+	r.Handle(Enter, func(e *Ed, k Key) { enter(e) })
+	r.Handle(Chars, func(e *Ed, k Key) { chars(e, k) })
+	r.Handle(Backspace, func(e *Ed, k Key) { back(e, k) })
+	r.Handle(Delete, func(e *Ed, k Key) { delete(e, k) })
+	r.Handle(Tab, func(e *Ed, k Key) { tab(e, k) })
+	r.Handle(ShiftTab, func(e *Ed, k Key) { shiftTab(e, k) })
+	r.Handle(Up, func(e *Ed, k Key) { prev(e) })
+	r.Handle(Down, func(e *Ed, k Key) { next(e) })
+	r.Run()
 }
 
 var cmds = [][]byte{
@@ -28,47 +28,47 @@ var cmds = [][]byte{
 	[]byte("users"),
 }
 
-func enter(p *Prompt) {
-	p.Pause()
-	println("\n\rEntered: " + p.Str())
-	historyAdd(p.Str())
-	p.Resume()
-	p.Reset()
+func enter(e *Ed) {
+	e.Pause()
+	println("\n\rEntered: " + e.Str())
+	historyAdd(e.Str())
+	e.Resume()
+	e.Reset()
 }
 
-func chars(p *Prompt, k Key) {
-	p.Insert(k.Chars)
-	suggest(p)
+func chars(e *Ed, k Key) {
+	e.Insert(k.Chars)
+	suggest(e)
 }
 
-func back(p *Prompt, k Key) {
-	p.Back()
-	suggest(p)
+func back(e *Ed, k Key) {
+	e.Back()
+	suggest(e)
 }
 
-func delete(p *Prompt, k Key) {
-	p.Delete()
-	suggest(p)
+func delete(e *Ed, k Key) {
+	e.Delete()
+	suggest(e)
 }
 
-func tab(p *Prompt, k Key) {
-	p.CompleteNext(cmds)
+func tab(e *Ed, k Key) {
+	e.CompleteNext(cmds)
 }
 
-func shiftTab(p *Prompt, k Key) {
-	p.CompletePrev(cmds)
+func shiftTab(e *Ed, k Key) {
+	e.CompletePrev(cmds)
 }
 
-func suggest(p *Prompt) {
-	p.Suggest(cmds)
+func suggest(e *Ed) {
+	e.Suggest(cmds)
 }
 
-func prev(p *Prompt) {
-	p.HistoryPrev(history())
+func prev(e *Ed) {
+	e.HistoryPrev(history())
 }
 
-func next(p *Prompt) {
-	p.HistoryNext(history())
+func next(e *Ed) {
+	e.HistoryNext(history())
 }
 
 var filename = "/tmp/led.history"
