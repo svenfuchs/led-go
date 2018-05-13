@@ -40,7 +40,7 @@ type Prompt struct {
 	pos       int
 	Chars     []byte
 	Suggested []byte
-	set       *Set
+	list      *List
 }
 
 // Handle attaches a handler for a key
@@ -221,9 +221,9 @@ func (p *Prompt) History(strs [][]byte, dir int) {
 }
 
 func (p *Prompt) cycle(strs [][]byte, mode int, dir int) {
-	c := NewSet(strs, p.Chars, mode)
-	if p.set == nil || !p.set.eq(c) {
-		p.set = c
+	c := NewList(strs, p.Chars, mode)
+	if p.list == nil || !p.list.eq(c) {
+		p.list = c
 	}
 
 	b := []byte{}
@@ -235,9 +235,9 @@ func (p *Prompt) cycle(strs [][]byte, mode int, dir int) {
 	}
 
 	if dir == Back {
-		b = concat(b, p.set.Prev())
+		b = concat(b, p.list.Prev())
 	} else {
-		b = concat(b, p.set.Next())
+		b = concat(b, p.list.Next())
 	}
 
 	p.Set(b)
@@ -246,7 +246,7 @@ func (p *Prompt) cycle(strs [][]byte, mode int, dir int) {
 // Suggest appends the first matching suggestion from the given slice in green
 // after the current cursor position.
 func (p *Prompt) Suggest(strs [][]byte) {
-	c := NewSet(strs, lastWord(p.Chars), Sugg)
+	c := NewList(strs, lastWord(p.Chars), Sugg)
 	w := lastWord(p.Chars)
 	s := bytes.TrimPrefix(c.Next(), w)
 
@@ -339,7 +339,7 @@ func (p *Prompt) reset() {
 	p.pos = 0
 	p.Chars = []byte{}
 	p.Suggested = []byte{}
-	p.set = nil
+	p.list = nil
 }
 
 func (p *Prompt) refresh() {
@@ -357,7 +357,7 @@ func (p *Prompt) update() {
 	}
 
 	if hasTailingSpace(p.Chars) {
-		p.set = nil
+		p.list = nil
 	}
 }
 

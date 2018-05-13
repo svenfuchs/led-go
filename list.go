@@ -6,27 +6,27 @@ import (
 
 var blank = []byte{}
 
-// NewSet returns a list of strings that are used for completion, history, and
+// NewList returns a list of strings that are used for completion, history, and
 // suggestions.
-func NewSet(strs [][]byte, str []byte, mode int) *Set {
+func NewList(strs [][]byte, str []byte, mode int) *List {
 	if mode == Comp {
 		str = lastWord(str)
 	} else {
 		str = firstWord(str)
 	}
-	return &Set{strs: strs, str: str, curr: -1}
+	return &List{strs: strs, str: str, curr: -1}
 }
 
-// Set represents a list of strings that are used for completion, history, and
+// List represents a list of strings that are used for completion, history, and
 // suggestions.
-type Set struct {
+type List struct {
 	curr int
 	strs [][]byte
 	str  []byte
 }
 
 // Next returns the next string from the list.
-func (c *Set) Next() []byte {
+func (c *List) Next() []byte {
 	strs := c.matches()
 	if len(strs) == 0 {
 		return blank
@@ -39,7 +39,7 @@ func (c *Set) Next() []byte {
 }
 
 // Prev returns the previous string from the list.
-func (c *Set) Prev() []byte {
+func (c *List) Prev() []byte {
 	strs := c.matches()
 	if len(strs) == 0 {
 		return blank
@@ -51,7 +51,7 @@ func (c *Set) Prev() []byte {
 	return strs[c.curr]
 }
 
-func (c *Set) eq(other *Set) bool {
+func (c *List) eq(other *List) bool {
 	lft, rgt := c.strs, other.strs
 	if len(lft) != len(rgt) {
 		return false
@@ -64,7 +64,7 @@ func (c *Set) eq(other *Set) bool {
 	return true
 }
 
-func (c *Set) matches() [][]byte {
+func (c *List) matches() [][]byte {
 	if len(c.str) == 0 {
 		return c.strs
 	}
