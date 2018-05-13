@@ -6,6 +6,7 @@ import (
 	"regexp"
 )
 
+// Known ansi codes
 const (
 	Clear int = iota
 	ClearLine
@@ -20,17 +21,20 @@ const (
 	Reset
 )
 
+// Directions
 const (
 	Rgt int = iota
 	Lft
 )
 
+// Code represents an ansi code
 type Code struct {
 	Code  int
 	Chars []byte
 	Hint  string
 }
 
+// Str returns the ansi code's chars as a string
 func (c Code) Str() string {
 	return string(c.Chars)
 }
@@ -48,10 +52,12 @@ var ansi = map[int]Code{
 	Reset:      {Reset, []byte("\x1b[0m"), "<reset>"},
 }
 
+// Ansi returns the chars for a given ansi code
 func Ansi(c int) []byte {
 	return ansi[c].Chars
 }
 
+// Colored returns the given chars wrapped in color codes
 func Colored(c int, b []byte) []byte {
 	return concat(ansi[c].Chars, b, ansi[Reset].Chars)
 }
@@ -63,16 +69,22 @@ var dir = map[int][]byte{
 	Lft: []byte("D"),
 }
 
+// SetCursor returns ansi codes for setting the cursor to the given horizontal
+// position.
 func SetCursor(pos int) []byte {
 	p := []byte(fmt.Sprintf("%d", pos))
 	return concat(dup(ansi[Cr].Chars), open, p, dir[Rgt])
 }
 
+// MoveCursor returns ansi codes for moving the cursor by the given number of
+// chars in the given direction.
 func MoveCursor(pos int, d int) []byte {
 	p := []byte(fmt.Sprintf("%d", pos))
 	return concat(open, p, dir[d])
 }
 
+// Deansi replaces ansi codes in the given byte array with hints. This is
+// useful for testing.
 func Deansi(b []byte) []byte {
 	for _, k := range ansi {
 		b = bytes.Replace(b, k.Chars, []byte(k.Hint), 99)

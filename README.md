@@ -1,8 +1,8 @@
 # Led
 
 [![Build Status](https://travis-ci.com/svenfuchs/led-go.svg?branch=master)](https://travis-ci.com/svenfuchs/led-go)
+[![Go Report Card](https://goreportcard.com/badge/github.com/svenfuchs/led-go?cache-bust=1)](https://goreportcard.com/report/github.com/svenfuchs/led-go)
 [![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg)](https://godoc.org/github.com/svenfuchs/led-go)
-[![Go Report Card](https://goreportcard.com/badge/github.com/svenfuchs/led-go)](https://goreportcard.com/report/github.com/svenfuchs/led-go)
 
 A line editor in Go. Inspired by [linenoise](https://github.com/antirez/linenoise),
 but written with extensibility and separation of concerns in mind.
@@ -20,7 +20,7 @@ import (
 )
 
 func main() {
-	NewLed("$ ").Run()
+	NewEd("$ ").Run()
 }
 ```
 

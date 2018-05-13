@@ -2,22 +2,22 @@ package main
 
 import (
 	"bytes"
-	. "github.com/svenfuchs/led-go"
-	. "github.com/svenfuchs/led-go/keys"
+	e "github.com/svenfuchs/led-go"
+	"github.com/svenfuchs/led-go/keys"
 	"io/ioutil"
 	"os"
 )
 
 func main() {
-	r := NewReadline("travis $ ")
-	r.Handle(Enter, func(e *Ed, k Key) { enter(e) })
-	r.Handle(Chars, func(e *Ed, k Key) { chars(e, k) })
-	r.Handle(Backspace, func(e *Ed, k Key) { back(e, k) })
-	r.Handle(Delete, func(e *Ed, k Key) { delete(e, k) })
-	r.Handle(Tab, func(e *Ed, k Key) { tab(e, k) })
-	r.Handle(ShiftTab, func(e *Ed, k Key) { shiftTab(e, k) })
-	r.Handle(Up, func(e *Ed, k Key) { prev(e) })
-	r.Handle(Down, func(e *Ed, k Key) { next(e) })
+	r := e.NewReadline("travis $ ")
+	r.Handle(keys.Enter, func(e *e.Ed, k keys.Key) { enter(e) })
+	r.Handle(keys.Chars, func(e *e.Ed, k keys.Key) { chars(e, k) })
+	r.Handle(keys.Backspace, func(e *e.Ed, k keys.Key) { back(e, k) })
+	r.Handle(keys.Delete, func(e *e.Ed, k keys.Key) { delete(e, k) })
+	r.Handle(keys.Tab, func(e *e.Ed, k keys.Key) { tab(e, k) })
+	r.Handle(keys.ShiftTab, func(e *e.Ed, k keys.Key) { shiftTab(e, k) })
+	r.Handle(keys.Up, func(e *e.Ed, k keys.Key) { prev(e) })
+	r.Handle(keys.Down, func(e *e.Ed, k keys.Key) { next(e) })
 	r.Run()
 }
 
@@ -28,7 +28,7 @@ var cmds = [][]byte{
 	[]byte("users"),
 }
 
-func enter(e *Ed) {
+func enter(e *e.Ed) {
 	e.Pause()
 	println("\n\rEntered: " + e.Str())
 	historyAdd(e.Str())
@@ -36,38 +36,38 @@ func enter(e *Ed) {
 	e.Reset()
 }
 
-func chars(e *Ed, k Key) {
+func chars(e *e.Ed, k keys.Key) {
 	e.Insert(k.Chars)
 	suggest(e)
 }
 
-func back(e *Ed, k Key) {
+func back(e *e.Ed, k keys.Key) {
 	e.Back()
 	suggest(e)
 }
 
-func delete(e *Ed, k Key) {
+func delete(e *e.Ed, k keys.Key) {
 	e.Delete()
 	suggest(e)
 }
 
-func tab(e *Ed, k Key) {
+func tab(e *e.Ed, k keys.Key) {
 	e.CompleteNext(cmds)
 }
 
-func shiftTab(e *Ed, k Key) {
+func shiftTab(e *e.Ed, k keys.Key) {
 	e.CompletePrev(cmds)
 }
 
-func suggest(e *Ed) {
+func suggest(e *e.Ed) {
 	e.Suggest(cmds)
 }
 
-func prev(e *Ed) {
+func prev(e *e.Ed) {
 	e.HistoryPrev(history())
 }
 
-func next(e *Ed) {
+func next(e *e.Ed) {
 	e.HistoryNext(history())
 }
 

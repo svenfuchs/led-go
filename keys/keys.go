@@ -4,20 +4,23 @@ import (
 	"bytes"
 )
 
-type Reader interface {
+type reader interface {
 	Read(b []byte) (int, error)
 }
 
+// Key represents a key
 type Key struct {
 	Code  int
 	Chars []byte
 	Name  string
 }
 
+// Str returns the key's chars as a string
 func (k Key) Str() string {
 	return string(k.Chars)
 }
 
+// Known keys
 const (
 	Chars int = iota
 	CtrlA
@@ -46,6 +49,7 @@ const (
 	Left
 )
 
+// Keys defines known keys
 var Keys = map[int]Key{
 	CtrlA:     {CtrlA, []byte{0x1}, "Ctrl-A"},
 	CtrlB:     {CtrlB, []byte{0x2}, "Ctrl-B"},
@@ -73,7 +77,8 @@ var Keys = map[int]Key{
 	Left:      {Left, []byte{0x1b, 0x5b, 0x44}, "Left"},
 }
 
-func Read(tty Reader) chan Key {
+// Read returns a channel for reading keys. Terminates on ctrl-d.
+func Read(tty reader) chan Key {
 	bytes := make([]byte, 10)
 	keys := make(chan Key, 1)
 
