@@ -20,7 +20,9 @@ import (
 )
 
 func main() {
-	NewEd("$ ").Run()
+	e := NewEd("$ ").Run()
+	e.Handle(led.Chars, func(e *led.Ed, k led.Key) { ... })
+	e.Run()
 }
 ```
 
