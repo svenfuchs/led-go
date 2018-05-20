@@ -47,7 +47,7 @@ func NewEd(led string, t ...Iterm) *Ed {
 		term:      StartTerm(t...),
 		handlers:  map[int]func(*Ed, Key){},
 		Prompt:    []byte(led),
-		pos:       0,
+		Pos:       0,
 		Chars:     []byte{},
 		Suggested: []byte{},
 	}
@@ -58,7 +58,7 @@ type Ed struct {
 	term      *Term
 	handlers  map[int]func(*Ed, Key)
 	Prompt    []byte
-	pos       int
+	Pos       int
 	Chars     []byte
 	Suggested []byte
 	list      *List
@@ -71,7 +71,7 @@ func (e *Ed) Handle(key int, handler func(*Ed, Key)) {
 
 // Run runs the editor
 func (e *Ed) Run() {
-	e.refresh()
+	e.Refresh()
 	for k := range e.term.Read() {
 		if e.handlers[k.Code] != nil {
 			e.handlers[k.Code](e, k)
@@ -93,14 +93,14 @@ func (e *Ed) Resume() {
 
 // Left moves the cursor one char to the left.
 func (e *Ed) Left() {
-	if e.pos > 0 {
+	if e.Pos > 0 {
 		e.MoveCursor(1, Back)
 	}
 }
 
 // Right moves the cursor one char to the right.
 func (e *Ed) Right() {
-	if e.pos < len(e.Chars) {
+	if e.Pos < len(e.Chars) {
 		e.MoveCursor(1, Forw)
 	}
 }
@@ -108,16 +108,16 @@ func (e *Ed) Right() {
 // Append appends the given chars at the end of the line.
 func (e *Ed) Append(b []byte) {
 	e.Chars = append(e.Chars, b...)
-	e.pos = len(e.Chars) - 1
+	e.Pos = len(e.Chars) - 1
 	e.Write(b)
 	e.update()
 }
 
 // Insert inserts the given chars at the current cursor position.
 func (e *Ed) Insert(b []byte) {
-	e.Chars = insert(e.Chars, b, e.pos)
+	e.Chars = insert(e.Chars, b, e.Pos)
 	e.Write(b)
-	e.pos += len(b)
+	e.Pos += len(b)
 	e.update()
 }
 
@@ -132,36 +132,36 @@ func (e *Ed) Reject(chars []byte) {
 
 // Back removes one char before the current cursor position.
 func (e *Ed) Back() {
-	if e.pos == 0 {
+	if e.Pos == 0 {
 		return
 	}
 
 	e.MoveCursor(1, Back)
-	e.Chars = delete(e.Chars, e.pos, 1)
+	e.Chars = delete(e.Chars, e.Pos, 1)
 	e.Del()
 	e.update()
 }
 
 // BackWord removes one word before the current cursor position.
 func (e *Ed) BackWord() {
-	if e.pos == 0 {
+	if e.Pos == 0 {
 		return
 	}
 
-	w := lastWord(e.Chars[:e.pos], true)
+	w := lastWord(e.Chars[:e.Pos], true)
 	e.MoveCursor(len(w), Back)
-	e.Chars = delete(e.Chars, e.pos, len(w))
+	e.Chars = delete(e.Chars, e.Pos, len(w))
 	e.Del(len(w))
 	e.update()
 }
 
 // Delete removes one char after the current cursor position.
 func (e *Ed) Delete() {
-	if e.pos == len(e.Chars) {
+	if e.Pos == len(e.Chars) {
 		return
 	}
 
-	e.Chars = delete(e.Chars, e.pos, 1)
+	e.Chars = delete(e.Chars, e.Pos, 1)
 	e.Del()
 	e.update()
 }
@@ -169,11 +169,11 @@ func (e *Ed) Delete() {
 // DeleteFromCursor deletes all chars from the current cursor position to the
 // end of the line.
 func (e *Ed) DeleteFromCursor() {
-	if e.pos == len(e.Chars) {
+	if e.Pos == len(e.Chars) {
 		return
 	}
 
-	e.Chars = delete(e.Chars, e.pos, len(e.Chars)-e.pos)
+	e.Chars = delete(e.Chars, e.Pos, len(e.Chars)-e.Pos)
 	e.clear()
 	e.update()
 }
@@ -189,16 +189,16 @@ func (e *Ed) Transpose() {
 	}
 
 	offset := 0
-	if e.pos == len(e.Chars) {
+	if e.Pos == len(e.Chars) {
 		offset = 2
-	} else if e.pos > 0 {
+	} else if e.Pos > 0 {
 		offset = 1
 	}
 
-	e.SetCursor(e.pos - offset)
-	e.Chars = swap(e.Chars, e.pos, e.pos+1)
-	e.Write(e.Chars[e.pos:])
-	e.SetCursor(min(e.pos+2, len(e.Chars)))
+	e.SetCursor(e.Pos - offset)
+	e.Chars = swap(e.Chars, e.Pos, e.Pos+1)
+	e.Write(e.Chars[e.Pos:])
+	e.SetCursor(min(e.Pos+2, len(e.Chars)))
 }
 
 // Discard discards the given input by moving to the next line and starting
@@ -261,19 +261,27 @@ func (e *Ed) cycle(strs [][]byte, mode int, dir int) {
 		b = concat(b, e.list.Next())
 	}
 
-	e.Set(b)
+	if bytes.Equal(b, e.Chars) && mode == Comp {
+		e.list = nil
+	} else {
+		e.Set(b)
+	}
 }
 
 // Suggest appends the first matching suggestion from the given slice in green
 // after the current cursor position.
-func (e *Ed) Suggest(strs [][]byte) {
-	c := NewList(strs, lastWord(e.Chars), Sugg)
-	w := lastWord(e.Chars)
-	s := bytes.TrimPrefix(c.Next(), w)
+func (e *Ed) Suggest(str []byte) {
+	if e.Pos == 0 {
+		e.clearLine()
+		return
+	}
+
+	// w := lastWord(e.Chars)
+	s := bytes.TrimPrefix(str, e.Chars)
 
 	e.Suggested = s
 	e.clear()
-	e.Write(concat(e.Chars[e.pos:], Colored(Green, e.Suggested)))
+	e.Write(concat(e.Chars[e.Pos:], Colored(Green, e.Suggested)))
 	e.SetCursor()
 }
 
@@ -298,14 +306,14 @@ func (e *Ed) Set(b []byte) {
 	e.clear()
 	e.Chars = b
 	e.Write(b)
-	e.pos += len(b)
+	e.Pos += len(b)
 	e.update()
 }
 
 // Reset resets the editor and starts over with an empty line.
 func (e *Ed) Reset() {
 	e.reset()
-	e.refresh()
+	e.Refresh()
 }
 
 // Write writes the given chars to the terminae.
@@ -317,24 +325,24 @@ func (e *Ed) Write(b []byte) {
 // position.
 func (e *Ed) SetCursor(pos ...int) {
 	if len(pos) > 0 {
-		e.pos = pos[0]
+		e.Pos = pos[0]
 	}
-	e.term.SetCursor(e.pos + len(e.Prompt))
+	e.term.SetCursor(e.Pos + len(e.Prompt))
 }
 
 // MoveCursor moves the cursor by the given number of chars in the given
 // direction.
 func (e *Ed) MoveCursor(i int, dir int) {
 	if dir == Forw {
-		if e.pos == len(e.Chars)-1 {
+		if e.Pos == len(e.Chars)-1 {
 			return
 		}
-		e.pos += i
+		e.Pos += i
 	} else {
-		if e.pos == 0 {
+		if e.Pos == 0 {
 			return
 		}
-		e.pos -= i
+		e.Pos -= i
 	}
 	e.term.MoveCursor(i, dir)
 }
@@ -357,13 +365,13 @@ func (e *Ed) Str() string {
 }
 
 func (e *Ed) reset() {
-	e.pos = 0
+	e.Pos = 0
 	e.Chars = []byte{}
 	e.Suggested = []byte{}
 	e.list = nil
 }
 
-func (e *Ed) refresh() {
+func (e *Ed) Refresh() {
 	e.update()
 	e.clearLine()
 	if len(e.Chars) > 0 {

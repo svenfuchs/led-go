@@ -79,7 +79,7 @@ var Keys = map[int]Key{
 
 // Read returns a channel for reading keys. Terminates on ctrl-d.
 func Read(tty reader) chan Key {
-	bytes := make([]byte, 10)
+	bytes := make([]byte, 16)
 	keys := make(chan Key, 1)
 
 	go func() {

@@ -36,4 +36,4 @@ more control.
 ## Todo
 
 * Handle multiple lines if line length exceeds terminal width
-
+* History search with ctrl-r

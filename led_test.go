@@ -11,7 +11,7 @@ import (
 func TestEd(t *testing.T) {
 	prompt, term := setup()
 	assert.Equal(t, "", prompt.Str())
-	assert.Equal(t, 0, prompt.pos)
+	assert.Equal(t, 0, prompt.Pos)
 	assertOut(t, term, []string{
 		"<cr><clear>t ~ <cr><rgt-4>",
 	})
@@ -25,7 +25,7 @@ func TestKeys(t *testing.T) {
 	receive(term, "bar")
 
 	assert.Equal(t, "foo bar", prompt.Str())
-	assert.Equal(t, 7, prompt.pos)
+	assert.Equal(t, 7, prompt.Pos)
 	assertOut(t, term, []string{
 		"<cr><clear>t ~ <cr><rgt-4>",
 		"foo ",
@@ -85,7 +85,7 @@ func TestSet(t *testing.T) {
 	prompt.Set([]byte("bar"))
 
 	assert.Equal(t, "bar", prompt.Str())
-	assert.Equal(t, 3, prompt.pos)
+	assert.Equal(t, 3, prompt.Pos)
 	assertOut(t, term, []string{
 		"<cr><clear>t ~ <cr><rgt-4>",
 		"foo",
@@ -101,7 +101,7 @@ func TestInsert(t *testing.T) {
 	prompt.Insert([]byte("bar"))
 
 	assert.Equal(t, "foo bar", prompt.Str())
-	assert.Equal(t, 7, prompt.pos)
+	assert.Equal(t, 7, prompt.Pos)
 	assertOut(t, term, []string{
 		"<cr><clear>t ~ <cr><rgt-4>",
 		"foo ",
@@ -116,7 +116,7 @@ func TestReject(t *testing.T) {
 	prompt.Reject([]byte("foo"))
 
 	assert.Equal(t, "", prompt.Str())
-	assert.Equal(t, 0, prompt.pos)
+	assert.Equal(t, 0, prompt.Pos)
 	assertOut(t, term, []string{
 		"<cr><clear>t ~ <cr><rgt-4>",
 		"<red>foo<reset>",
@@ -131,13 +131,13 @@ func TestBackAtEnd(t *testing.T) {
 	prompt, term := setup()
 	receive(term, "bar")
 	assert.Equal(t, "bar", prompt.Str())
-	assert.Equal(t, 3, prompt.pos)
+	assert.Equal(t, 3, prompt.Pos)
 
 	prompt.Back()
 	prompt.Back()
 
 	assert.Equal(t, "b", prompt.Str())
-	assert.Equal(t, 1, prompt.pos)
+	assert.Equal(t, 1, prompt.Pos)
 	assertOut(t, term, []string{
 		"<cr><clear>t ~ <cr><rgt-4>",
 		"bar",
@@ -153,7 +153,7 @@ func TestBackInMiddle(t *testing.T) {
 	prompt.Back()
 
 	assert.Equal(t, "br", prompt.Str())
-	assert.Equal(t, 1, prompt.pos)
+	assert.Equal(t, 1, prompt.Pos)
 	assertOut(t, term, []string{
 		"<cr><clear>t ~ <cr><rgt-4>",
 		"bar",
@@ -169,7 +169,7 @@ func TestBackAtStart(t *testing.T) {
 	prompt.Back()
 
 	assert.Equal(t, "bar", prompt.Str())
-	assert.Equal(t, 0, prompt.pos)
+	assert.Equal(t, 0, prompt.Pos)
 	assertOut(t, term, []string{
 		"<cr><clear>t ~ <cr><rgt-4>",
 		"bar",
@@ -186,7 +186,7 @@ func TestBackWordAtStart(t *testing.T) {
 	prompt.BackWord()
 
 	assert.Equal(t, "bar", prompt.Str())
-	assert.Equal(t, 0, prompt.pos)
+	assert.Equal(t, 0, prompt.Pos)
 	assertOut(t, term, []string{
 		"<cr><clear>t ~ <cr><rgt-4>",
 		"bar",
@@ -200,7 +200,7 @@ func TestBackWordAtEnd(t *testing.T) {
 	prompt.BackWord()
 
 	assert.Equal(t, "", prompt.Str())
-	assert.Equal(t, 0, prompt.pos)
+	assert.Equal(t, 0, prompt.Pos)
 	assertOut(t, term, []string{
 		"<cr><clear>t ~ <cr><rgt-4>",
 		"bar",
@@ -214,7 +214,7 @@ func TestBackWordAtEndSpace(t *testing.T) {
 	prompt.BackWord()
 
 	assert.Equal(t, "", prompt.Str())
-	assert.Equal(t, 0, prompt.pos)
+	assert.Equal(t, 0, prompt.Pos)
 	assertOut(t, term, []string{
 		"<cr><clear>t ~ <cr><rgt-4>",
 		"bar  ",
@@ -230,7 +230,7 @@ func TestBackWordInWord(t *testing.T) {
 	prompt.BackWord()
 
 	assert.Equal(t, "o", prompt.Str())
-	assert.Equal(t, 0, prompt.pos)
+	assert.Equal(t, 0, prompt.Pos)
 	assertOut(t, term, []string{
 		"<cr><clear>t ~ <cr><rgt-4>",
 		"bar  foo",
@@ -248,7 +248,7 @@ func TestDeleteAtEnd(t *testing.T) {
 	prompt.Delete()
 
 	assert.Equal(t, "bar", prompt.Str())
-	assert.Equal(t, 3, prompt.pos)
+	assert.Equal(t, 3, prompt.Pos)
 	assertOut(t, term, []string{
 		"<cr><clear>t ~ <cr><rgt-4>",
 		"bar",
@@ -263,7 +263,7 @@ func TestDeleteInMiddle(t *testing.T) {
 	prompt.Delete()
 
 	assert.Equal(t, "br", prompt.Str())
-	assert.Equal(t, 1, prompt.pos)
+	assert.Equal(t, 1, prompt.Pos)
 	assertOut(t, term, []string{
 		"<cr><clear>t ~ <cr><rgt-4>",
 		"bar",
@@ -280,7 +280,7 @@ func TestDeleteAtStart(t *testing.T) {
 	prompt.Delete()
 
 	assert.Equal(t, "ar", prompt.Str())
-	assert.Equal(t, 0, prompt.pos)
+	assert.Equal(t, 0, prompt.Pos)
 	assertOut(t, term, []string{
 		"<cr><clear>t ~ <cr><rgt-4>",
 		"bar",
@@ -297,7 +297,7 @@ func TestDeleteFromCursorAtEnd(t *testing.T) {
 	prompt.DeleteFromCursor()
 
 	assert.Equal(t, "foo", prompt.Str())
-	assert.Equal(t, 3, prompt.pos)
+	assert.Equal(t, 3, prompt.Pos)
 	assertOut(t, term, []string{
 		"<cr><clear>t ~ <cr><rgt-4>",
 		"foo",
@@ -312,7 +312,7 @@ func TestDeleteFromCursorInMiddle(t *testing.T) {
 	prompt.DeleteFromCursor()
 
 	assert.Equal(t, "f", prompt.Str())
-	assert.Equal(t, 1, prompt.pos)
+	assert.Equal(t, 1, prompt.Pos)
 	assertOut(t, term, []string{
 		"<cr><clear>t ~ <cr><rgt-4>",
 		"foo",
@@ -329,7 +329,7 @@ func TestDeleteFromCursorAtStart(t *testing.T) {
 	prompt.DeleteFromCursor()
 
 	assert.Equal(t, "", prompt.Str())
-	assert.Equal(t, 0, prompt.pos)
+	assert.Equal(t, 0, prompt.Pos)
 	assertOut(t, term, []string{
 		"<cr><clear>t ~ <cr><rgt-4>",
 		"foo",
@@ -347,7 +347,7 @@ func TestTransposeAtStart(t *testing.T) {
 	prompt.Transpose()
 
 	assert.Equal(t, "abr", prompt.Str())
-	assert.Equal(t, 2, prompt.pos)
+	assert.Equal(t, 2, prompt.Pos)
 	assertOut(t, term, []string{
 		"<cr><clear>t ~ <cr><rgt-4>",
 		"bar",
@@ -364,7 +364,7 @@ func TestTransposeInMiddle1(t *testing.T) {
 	prompt.Transpose()
 
 	assert.Equal(t, "abr", prompt.Str())
-	assert.Equal(t, 2, prompt.pos)
+	assert.Equal(t, 2, prompt.Pos)
 	assertOut(t, term, []string{
 		"<cr><clear>t ~ <cr><rgt-4>",
 		"bar",
@@ -381,7 +381,7 @@ func TestTransposeInMiddle2(t *testing.T) {
 	prompt.Transpose()
 
 	assert.Equal(t, "bra", prompt.Str())
-	assert.Equal(t, 3, prompt.pos)
+	assert.Equal(t, 3, prompt.Pos)
 	assertOut(t, term, []string{
 		"<cr><clear>t ~ <cr><rgt-4>",
 		"bar",
@@ -396,7 +396,7 @@ func TestTransposeAtEnd(t *testing.T) {
 	prompt.Transpose()
 
 	assert.Equal(t, "bra", prompt.Str())
-	assert.Equal(t, 3, prompt.pos)
+	assert.Equal(t, 3, prompt.Pos)
 	assertOut(t, term, []string{
 		"<cr><clear>t ~ <cr><rgt-4>",
 		"bar",
@@ -416,7 +416,7 @@ func TestHistoryNextEmpty(t *testing.T) {
 	prompt.HistoryNext(h)
 
 	assert.Equal(t, "foo", prompt.Str())
-	assert.Equal(t, 3, prompt.pos)
+	assert.Equal(t, 3, prompt.Pos)
 	assertOut(t, term, []string{
 		"<cr><clear>t ~ <cr><rgt-4>",
 		"<cr><rgt-4><clear>foo",
@@ -433,7 +433,7 @@ func TestHistoryPrevEmpty(t *testing.T) {
 	prompt.HistoryPrev(h)
 
 	assert.Equal(t, "baz", prompt.Str())
-	assert.Equal(t, 3, prompt.pos)
+	assert.Equal(t, 3, prompt.Pos)
 	assertOut(t, term, []string{
 		"<cr><clear>t ~ <cr><rgt-4>",
 		"<cr><rgt-4><clear>baz",
@@ -452,7 +452,7 @@ func TestCompleteEmpty(t *testing.T) {
 	prompt.CompleteNext(c)
 
 	assert.Equal(t, "bar", prompt.Str())
-	assert.Equal(t, 3, prompt.pos)
+	assert.Equal(t, 3, prompt.Pos)
 	assertOut(t, term, []string{
 		"<cr><clear>t ~ <cr><rgt-4>",
 		"<cr><rgt-4><clear>foo",
@@ -472,7 +472,7 @@ func TestCompleteWithChar(t *testing.T) {
 	prompt.CompleteNext(c)
 
 	assert.Equal(t, "baz", prompt.Str())
-	assert.Equal(t, 3, prompt.pos)
+	assert.Equal(t, 3, prompt.Pos)
 	assertOut(t, term, []string{
 		"<cr><clear>t ~ <cr><rgt-4>",
 		"b",
@@ -516,17 +516,13 @@ func TestHistoryAndCompletion(t *testing.T) {
 // Suggest
 
 func TestSuggest(t *testing.T) {
-	c := [][]byte{
-		[]byte("foo"),
-		[]byte("bar"),
-		[]byte("baz"),
-	}
+	c := []byte("foo")
 	prompt, term := setup()
 	receive(term, "b")
 	prompt.Suggest(c)
 
 	assert.Equal(t, "b", prompt.Str())
-	assert.Equal(t, 1, prompt.pos)
+	assert.Equal(t, 1, prompt.Pos)
 	assertOut(t, term, []string{
 		"<cr><clear>t ~ <cr><rgt-4>",
 		"b<clear>",
