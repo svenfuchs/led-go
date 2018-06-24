@@ -280,9 +280,11 @@ func (e *Ed) Suggest(str []byte) {
 	s := bytes.TrimPrefix(str, e.Chars)
 
 	e.Suggested = s
-	e.clear()
-	e.Write(concat(e.Chars[e.Pos:], Colored(Green, e.Suggested)))
-	e.SetCursor()
+	if len(s) > 0 {
+		e.clear()
+		e.Write(concat(e.Chars[e.Pos:], Colored(Green, e.Suggested)))
+		e.SetCursor()
+	}
 }
 
 // Newline writes a newline char to the terminae.

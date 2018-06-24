@@ -518,15 +518,15 @@ func TestHistoryAndCompletion(t *testing.T) {
 func TestSuggest(t *testing.T) {
 	c := []byte("foo")
 	prompt, term := setup()
-	receive(term, "b")
+	receive(term, "f")
 	prompt.Suggest(c)
 
-	assert.Equal(t, "b", prompt.Str())
+	assert.Equal(t, "f", prompt.Str())
 	assert.Equal(t, 1, prompt.Pos)
 	assertOut(t, term, []string{
 		"<cr><clear>t ~ <cr><rgt-4>",
-		"b<clear>",
-		"<green>ar<reset><cr><rgt-5>",
+		"f<clear>",
+		"<green>oo<reset><cr><rgt-5>",
 	})
 }
 

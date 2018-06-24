@@ -59,7 +59,7 @@ func shiftTab(e *e.Ed, k e.Key) {
 }
 
 func suggest(e *e.Ed) {
-	e.Suggest(cmds)
+	// e.Suggest(cmds)
 }
 
 func prev(e *e.Ed) {
